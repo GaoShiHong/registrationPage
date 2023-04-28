@@ -1,0 +1,128 @@
+body {
+  background: #f9f9f9;
+  font-family: Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.registration-form {
+  background: #fff;
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  min-width: 650px;
+  max-width: 650px;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.registration-form h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.registration-form label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.registration-form input[type='text'],
+.registration-form input[type='password'] {
+  width: 100%;
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: #f2f2f2;
+  font-size: 16px;
+  color: #333;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.registration-form input[type='text']:focus,
+.registration-form input[type='password']:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+
+.registration-form .form-group {
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.registration-form .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.registration-form .error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+
+.registration-form .send-code-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 14px 20px;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 160px;
+  transition: background-color 0.2s ease-in-out;
+  margin-bottom: 20px;
+}
+
+.registration-form .send-code-button:hover {
+  background-color: #0069d9;
+}
+.flex {
+  display: flex;
+  align-items: center;
+}
+.flex img {
+  padding-left: 20px;
+  float: right;
+}
+.error-message {
+  position: absolute;
+  bottom: 0;
+  transform: translateY(50%);
+}
+
+
+.toast {
+  visibility: hidden;
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: green;
+  color: #fff;
+  text-align: center;
+  padding: 15px;
+  border-radius: 5px;
+  z-index: 1;
+}
+
+.toast.show {
+  visibility: visible;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein {
+  from {top: 0; opacity: 0;}
+  to {top: 30px; opacity: 1;}
+}
+
+@keyframes fadeout {
+  from {top: 30px; opacity: 1;}
+  to {top: 0; opacity: 0;}
+}
