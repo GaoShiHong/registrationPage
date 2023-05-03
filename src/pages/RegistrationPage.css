@@ -30,6 +30,10 @@ body {
   font-weight: 600;
   margin-bottom: 5px;
 }
+.registration-form input[type='text']:disabled {
+  color: rgb(170, 170, 170) !important;
+  cursor: no-drop;
+}
 
 .registration-form input[type='text'],
 .registration-form input[type='password'] {
@@ -54,6 +58,19 @@ body {
 .registration-form .form-group {
   margin-bottom: 30px;
   position: relative;
+}
+.registration-form .form-group .account-icon {
+  position: absolute;
+  right: 20px;
+  top: 35px;
+  width: 20px;
+  cursor: pointer;
+}
+.registration-form .form-group .marbottom {
+  height: 30px;
+  position: relative;
+  color: red;
+  font-size: 14px;
 }
 
 .registration-form .form-group:last-child {
