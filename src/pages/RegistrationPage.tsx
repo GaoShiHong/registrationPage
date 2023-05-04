@@ -296,29 +296,196 @@ export function RegistrationPage() {
     }
 
   };
-
-  // 判断密码是否一致
-  const makeSurePassWord = () => {
+  const [passwordOver, setPasswordOver] = createSignal(false)
+  const makePassWordFun = () => {
     if (formData().confirmPassword && formData().password && (formData().password !== formData().confirmPassword || formData().confirmPassword.length < 6)) {
-      // setIsPasswordMatch(false);
-      setVaildDataRequired({
-        ...vaildDataRequired(),
-        confirmPassword: '两次输入的需密码一致，且必须大于6位数'
-      })
-      setVaildDataShow({
-        ...vaildDataShow(),
-        confirmPassword: true
-      })
+      return false
     } else {
-      setVaildDataRequired({
-        ...vaildDataRequired(),
-        confirmPassword: '请输入确认密码'
-      })
-      setVaildDataShow({
-        ...vaildDataShow(),
-        confirmPassword: false
-      })
+      return true
     }
+  }
+  // 判断密码是否符合规则，判断密码是否一致
+  const makeSurePassWordFun = () => {
+    // 判断密码是否符合规则
+    if (formData().password) {
+      debugger
+      // 特殊字符
+      const containSpecial = new RegExp(/[(\ )(\~)(\!)(\@)(\#)(\$)(\%)(\^)(\&)(\*)(\()(\))(\-)(\_)(\+)(\=)(\[)(\])(\{)(\})(\|)(\\)(\;)(\:)(\')(\")(\,)(\.)(\/)(\<)(\>)(\?)(\)]+/)
+      // 是否包含数字
+      const num = /\d/
+      const isHasNum = num.test(formData().password)
+      // 是否包含小写字母
+      const smallLetter = /[a-z]/
+      const isHasSmallLetter = smallLetter.test(formData().password)
+      // 是否包含大写字母
+      const bigLetter = /[A-Z]/
+      const isHasBigLetter = bigLetter.test(formData().password)
+      let isPassWordHave = 0
+      if (isHasNum) isPassWordHave++
+      if (isHasSmallLetter) isPassWordHave++
+      if (isHasBigLetter) isPassWordHave++
+      if (containSpecial.test(formData().password)) {
+        // setVaildDataRequired({
+        //   ...vaildDataRequired(),
+        //   password: '不包含空格'
+        // })
+        // setVaildDataShow({
+        //   ...vaildDataShow(),
+        //   password: true
+        // })
+        // setPasswordOver(true)
+        return {
+          text: '不包含空格等特殊符号',
+          bool: true
+        }
+      } else if (formData().password.length < 8 || formData().password.length > 16) {
+        // setVaildDataRequired({
+        //   ...vaildDataRequired(),
+        //   password: '长度为8到16个字符'
+        // })
+        // setVaildDataShow({
+        //   ...vaildDataShow(),
+        //   password: true
+        // })
+        // setPasswordOver(true)
+        return {
+          text: '长度为8到16个字符',
+          bool: true
+        }
+      } else if (isPassWordHave < 3) {
+        // setVaildDataRequired({
+        //   ...vaildDataRequired(),
+        //   password: '密码必须包含特殊字符，字母大写，字母小写，数字其中三项'
+        // })
+        // setVaildDataShow({
+        //   ...vaildDataShow(),
+        //   password: true
+        // })
+        // setPasswordOver(true)
+        return {
+          text: '密码必须包含字母大写，字母小写，数字三项',
+          bool: true
+        }
+      } else {
+        return {
+          text: '',
+          bool: false
+        }
+      }
+      // else {
+        // 判断密码是否一致
+      //   if (!makePassWordFun()) {
+      //     setVaildDataRequired({
+      //       ...vaildDataRequired(),
+      //       confirmPassword: '两次输入的需密码一致，且必须大于6位数'
+      //     })
+      //     setVaildDataShow({
+      //       ...vaildDataShow(),
+      //       confirmPassword: true
+      //     })
+      //     setPasswordOver(true)
+      //   } else {
+      //     setVaildDataRequired({
+      //       ...vaildDataRequired(),
+      //       password: '请输入密码'
+      //     })
+      //     setVaildDataShow({
+      //       ...vaildDataShow(),
+      //       password: false
+      //     })
+      //     setPasswordOver(false)
+      //   }
+      // }
+    } else {
+      // setVaildDataRequired({
+      //   ...vaildDataRequired(),
+      //   password: '请输入密码'
+      // })
+      // setVaildDataShow({
+      //   ...vaildDataShow(),
+      //   password: true
+      // })
+      return {
+        text: '请输入密码',
+        bool:  true
+      }
+    }
+  }
+  const makeConfirmPasswordFun = () => {
+    if (formData().confirmPassword) {
+      if (!makePassWordFun()) {
+        // setVaildDataRequired({
+        //   ...vaildDataRequired(),
+        //   confirmPassword: '两次输入的需密码一致，且必须大于6位数'
+        // })
+        // setVaildDataShow({
+        //   ...vaildDataShow(),
+        //   confirmPassword: true
+        // })
+        return {
+          text: '两次输入的需密码一致，且必须大于6位数',
+          bool:  true
+        }
+      } else {
+        // setVaildDataRequired({
+        //   ...vaildDataRequired(),
+        //   confirmPassword: '请输入确认密码'
+        // })
+        // setVaildDataShow({
+        //   ...vaildDataShow(),
+        //   confirmPassword: false
+        // })
+        return {
+          text: '',
+          bool:  false
+        }
+      }
+    } else {
+      // setVaildDataRequired({
+      //   ...vaildDataRequired(),
+      //   confirmPassword: '请输入确认密码'
+      // })
+      // setVaildDataShow({
+      //   ...vaildDataShow(),
+      //   confirmPassword: true
+      // })
+      return {
+        text: '请输入确认密码',
+        bool:  true
+      }
+    }
+  }
+  const makeSurePassWord = () => {
+    const { text, bool } = makeSurePassWordFun()
+    setVaildDataRequired({
+      ...vaildDataRequired(),
+      password: text
+    })
+    setVaildDataShow({
+      ...vaildDataShow(),
+      password: bool
+    })
+    const comfirm = makeConfirmPasswordFun()
+    setVaildDataRequired({
+      ...vaildDataRequired(),
+      confirmPassword: comfirm.text
+    })
+    setVaildDataShow({
+      ...vaildDataShow(),
+      confirmPassword: comfirm.bool
+    })
+  }
+  // 判断确认密码是否密码一致
+  const makeConfirmPassword = () => {
+    const { text, bool } = makeConfirmPasswordFun()
+    setVaildDataRequired({
+      ...vaildDataRequired(),
+      confirmPassword: text
+    })
+    setVaildDataShow({
+      ...vaildDataShow(),
+      confirmPassword: bool
+    })
   }
 
   const verifyCode = () => {
@@ -341,7 +508,17 @@ export function RegistrationPage() {
       }
     }
     console.log(vaildDataShow())
-    // 密码其他校验
+    // 密码的其他校验
+    const { text, bool } = makeSurePassWordFun()
+    setVaildDataRequired({
+      ...vaildDataRequired(),
+      password: text
+    })
+    setVaildDataShow({
+      ...vaildDataShow(),
+      password: bool
+    })
+    if (bool)  vaild = true
     if (formData().confirmPassword && formData().password && (formData().password !== formData().confirmPassword || formData().confirmPassword.length < 6)) {
       // setIsPasswordMatch(false);
       setVaildDataRequired({
@@ -497,7 +674,7 @@ export function RegistrationPage() {
           <div class="form-group">
             <div>
               <label for="confirm-password">确认密码:</label>
-              <input type={isOpenConfirmEye() ? "text" : "password"} name="confirmPassword" id="confirmPassword" placeholder="请确认密码" onInput={handleInputChange} onBlur={makeSurePassWord} />
+              <input type={isOpenConfirmEye() ? "text" : "password"} name="confirmPassword" id="confirmPassword" placeholder="请确认密码" onInput={handleInputChange} onBlur={makeConfirmPassword} />
               <img class="account-icon" src={isOpenConfirmEye() ? openEye : closeEye} alt="" srcset="" onClick={openConfirmEyeFun} />
             </div>
             <div>
