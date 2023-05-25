@@ -18,9 +18,16 @@
     padding: 20px 0;
     text-align: 20px;
     img {
-        width: 40px;
-        margin-top: 30px;
-        margin-bottom: 40px;
+      width: 60px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+    .success-middle-message {
+      font-size: 14px;
+      margin-top: 10px;
+      span {
+        color: #e90;
+      }
     }
   }
   .success-bottom {
@@ -32,5 +39,52 @@
     span {
         cursor: pointer;
     }
+  }
+}
+.invitation-code {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: absolute;
+  top: 20%;
+  right: 10%;
+  height: 500px;
+  button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 14px 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 160px;
+    transition: background-color 0.2s ease-in-out;
+    margin-bottom: 20px;
+  }
+}
+.invitation-button {
+  display: flex;
+  justify-content: flex-end;
+  button {
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out;
+    margin-bottom: 20px;
+  }
+  .invitation-button-handle {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    margin-right: 20px;
+  }
+  .invitation-button-cancle {
+    background-color: #fff;
+    color: #007bff;
+    border: 1px solid #007bff;
   }
 }

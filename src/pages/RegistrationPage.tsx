@@ -1,4 +1,4 @@
-import { createSignal } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import './RegistrationPage.css';
 import './registrationOther.css'
 import { isValidPhoneNumber, isValidAccount } from '../utils/valid';
@@ -8,6 +8,7 @@ import redLightIcon from '../assets/redLightIcon.png';
 import openEye from '../assets/openEye.png';
 import closeEye from '../assets/closeEye.png';
 import { encryptAes } from '../utils/crypto'
+import { Model } from './Model';
 
 export function RegistrationPage() {
   const [formData, setFormData] = createSignal({
@@ -41,6 +42,8 @@ export function RegistrationPage() {
   const [light, setLight] = createSignal(greenLightIcon)
   // 是否注册成功
   const [isAddOver, setIsAddOver] = createSignal(false);
+  // 注册成功返回的邀请码
+  const [overCode, setOverCode] = createSignal('')
   // 必填校验
   const [vaildDataRequired, setVaildDataRequired] = createSignal({
     userAccount: '请输入账号',
@@ -48,7 +51,8 @@ export function RegistrationPage() {
     confirmPassword: '请输入确认密码',
     verificationCode: '请输入短信验证码',
     phoneNumber: '请输入手机号码',
-    imgVerificationCode: '请输入图片验证码'
+    imgVerificationCode: '请输入图片验证码',
+    invitationCode: '请输入邀请码'
   });
   // 是否触发校验
   const [vaildDataShow, setVaildDataShow] = createSignal({
@@ -57,7 +61,8 @@ export function RegistrationPage() {
     confirmPassword: false,
     verificationCode: false,
     phoneNumber: false,
-    imgVerificationCode: false
+    imgVerificationCode: false,
+    invitationCode: false
   });
   // 判断账号是否注册过
   const isAccountRegistra = (value: string) => {
@@ -92,6 +97,18 @@ export function RegistrationPage() {
       }
     }
   }
+  // 清空校验提示信息
+  const clearValideFun = () => {
+    setVaildDataShow({
+      userAccount: false,
+      password: false,
+      confirmPassword: false,
+      verificationCode: false,
+      phoneNumber: false,
+      imgVerificationCode: false,
+      invitationCode: false
+    })
+  }
   // 返回登录
   const goBack = () => {
     setFormData({
@@ -105,23 +122,26 @@ export function RegistrationPage() {
     })
     clearFormData(formData())
     setIsAddOver(false)
+    setOverCode('')
     setIsCodeSent(false)
   }
   const handleOnChange = (event: Event) => {
-    const target = event.target as HTMLInputElement;
-    let value = target.value
-    if (!value) return
-    // 判断账号是否注册过
-    isAccountRegistra(value).then(() => {
-      setLight(greenLightIcon)
-    }).catch((resp) => {
-      setToastMessage(resp ? resp.message : '系统异常')
-      setToastShow(true);
-      setTimeout(() => {
-        setToastShow(false);
-      }, 2000)
-      setLight(redLightIcon)
-    })
+    if (actionName() === 'registration') {
+      const target = event.target as HTMLInputElement;
+      let value = target.value
+      if (!value) return
+      // 判断账号是否注册过
+      isAccountRegistra(value).then(() => {
+        setLight(greenLightIcon)
+      }).catch((resp) => {
+        setToastMessage(resp ? resp.message : '系统异常')
+        setToastShow(true);
+        setTimeout(() => {
+          setToastShow(false);
+        }, 2000)
+        setLight(redLightIcon)
+      })
+    }
   };
   const handleInputChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -163,10 +183,10 @@ export function RegistrationPage() {
     })
       .then(res => {
         res.json().then(resp => {
-          debugger
           if (resp.status === 200) {
             setIsAddOver(true)
             setToastMessage("账号注册成功")
+            setOverCode(resp.data)
             setToastShow(true);
             setTimeout(() => {
               setToastShow(false);
@@ -308,7 +328,6 @@ export function RegistrationPage() {
   const makeSurePassWordFun = () => {
     // 判断密码是否符合规则
     if (formData().password) {
-      debugger
       // 特殊字符
       const containSpecial = new RegExp(/[(\ )(\~)(\!)(\@)(\#)(\$)(\%)(\^)(\&)(\*)(\()(\))(\-)(\_)(\+)(\=)(\[)(\])(\{)(\})(\|)(\\)(\;)(\:)(\')(\")(\,)(\.)(\/)(\<)(\>)(\?)(\)]+/)
       // 是否包含数字
@@ -335,7 +354,7 @@ export function RegistrationPage() {
         // })
         // setPasswordOver(true)
         return {
-          text: '不包含空格等特殊符号',
+          text: '不能包含空格和特殊符号',
           bool: true
         }
       } else if (formData().password.length < 8 || formData().password.length > 16) {
@@ -456,6 +475,7 @@ export function RegistrationPage() {
     }
   }
   const makeSurePassWord = () => {
+    if (actionName() !== 'registration') return
     const { text, bool } = makeSurePassWordFun()
     setVaildDataRequired({
       ...vaildDataRequired(),
@@ -579,12 +599,14 @@ export function RegistrationPage() {
       return
     } else {
       setVaildDataShow({
+        ...vaildDataShow(),
         userAccount: false,
         password: false,
         confirmPassword: false,
         verificationCode: false,
         phoneNumber: false,
-        imgVerificationCode: false
+        imgVerificationCode: false,
+        invitationCode: false
       })
     }
 
@@ -633,6 +655,465 @@ export function RegistrationPage() {
 
   const handleDebouncedSubmit = debounceSubmit(verifyCode, 500);
 
+  // 邀请码功能
+  // 标题
+  const [titleName, setTitleName] = createSignal({
+    'registration': '注册账号',
+    'detailInvitation': '查询邀请码',
+    'bindingInvitation': '绑定邀请码',
+    'queryBinding': '查询绑定用户',
+    'queryInvitation': '查询邀请用户',
+  })
+  // 当前操作
+  const [actionName, setActionName] = createSignal('registration')
+  // 邀请码校验
+  const verifyInvitation = (isCode = false) => {
+    let bool = false
+    if (!formData().userAccount) {
+      setVaildDataShow({
+        ...vaildDataShow(),
+        userAccount: true
+      })
+      setVaildDataRequired({
+        ...vaildDataRequired(),
+        userAccount: '请输入账号'
+      })
+      bool = true
+    } else {
+      setVaildDataShow({
+        ...vaildDataShow(),
+        userAccount: false
+      })
+    }
+    // if (!formData().password) {
+    //   setVaildDataShow({
+    //     ...vaildDataShow(),
+    //     password: true
+    //   })
+    //   setVaildDataRequired({
+    //     ...vaildDataRequired(),
+    //     password: '请输入密码'
+    //   })
+    //   bool = true
+    // } else {
+    //   setVaildDataShow({
+    //     ...vaildDataShow(),
+    //     password: false
+    //   })
+    // }
+    if (!formData().imgVerificationCode) {
+      setVaildDataShow({
+        ...vaildDataShow(),
+        imgVerificationCode: true
+      })
+      setVaildDataRequired({
+        ...vaildDataRequired(),
+        imgVerificationCode: '请输入图片验证码'
+      })
+      bool = true
+    } else {
+      setVaildDataShow({
+        ...vaildDataShow(),
+        imgVerificationCode: false
+      })
+    }
+    if (isCode) {
+      if (!invitationCode()) {
+        setVaildDataShow({
+          ...vaildDataShow(),
+          invitationCode: true
+        })
+        setVaildDataRequired({
+          ...vaildDataRequired(),
+          invitationCode: '请输入邀请码'
+        })
+        bool = true
+      } else {
+        setVaildDataShow({
+          ...vaildDataShow(),
+          invitationCode: false
+        })
+      }
+    }
+    return bool
+  }
+  // 查询邀请码
+  const [invitationMessage, setInvitationMessage] = createSignal('')
+  const [invitationMessageBool, setInvitationMessageBool] = createSignal(false)
+  const [detailModel, setDetailModel] = createSignal(false)
+  // 开启查询邀请码表单
+  const queryButton = () => {
+    setActionName('detailInvitation')
+    clearValideFun()
+  }
+  const queryInvitationCode = () => {
+    if (verifyInvitation()) {
+      return
+    }
+    fetch("/app/invitationCode/getCode", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        account: formData().userAccount,
+        password: formData().password,
+        key: formData().imgKey,
+        value: formData().imgVerificationCode.toLocaleLowerCase()
+      })
+    }).then((res) => {
+      console.log(res)
+      res.json().then((resp) => {
+        let message
+        if (resp.status === 200 && resp.data) {
+          message = resp.data.invitationCode
+          setInvitationMessageBool(true)
+        } else {
+          message = resp.message
+          setInvitationMessageBool(false)
+        }
+        setInvitationMessage(message)
+        setDetailModel(true)
+      })
+    }).catch(() => {
+      setInvitationMessageBool(false)
+      setInvitationMessage('')
+      setToastMessage('系统异常')
+      setToastShow(true);
+      setTimeout(() => {
+        setToastShow(false);
+      }, 2000)
+    })
+  }
+  const closeDetial = () => {
+    setDetailModel(false)
+  }
+  // 绑定邀请码
+  const [invitationInput, setInvitationInput] = createSignal(false)
+  const [invitationCode, setInvitationCode] = createSignal('')
+  const bindingButton = () => {
+    setActionName('bindingInvitation')
+    clearValideFun()
+  }
+  const handleInputInvitation = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    let value = target.value
+    setInvitationCode(value)
+  }
+  const bindingInvitationCode = () => {
+    if (!invitationInput()) {
+      setInvitationInput(true)
+      return
+    }
+    if (verifyInvitation(true)) {
+      return
+    }
+    fetch("/app/invitationCode/bindingCode", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        account: formData().userAccount,
+        password: formData().password,
+        key: formData().imgKey,
+        value: formData().imgVerificationCode.toLocaleLowerCase(),
+        bindingInvitationCode: invitationCode()
+      })
+    }).then((res) => {
+      console.log(res)
+      res.json().then((resp) => {
+        setToastMessage(resp.message)
+        setToastShow(true);
+        setTimeout(() => {
+          setToastShow(false);
+        }, 2000)
+      })
+    }).catch(() => {
+      setToastMessage('系统异常')
+      setToastShow(true);
+      setTimeout(() => {
+        setToastShow(false);
+      }, 2000)
+    })
+  }
+  // 查询绑定用户
+  const [unbindModel, setUnbindModel] = createSignal(false)
+  const [userInvitationCode, setUserInvitationCode] = createSignal('')
+  const [userInvitationAccount, setUserInvitationAccount] = createSignal('')
+  const [invitationId, setInvitationId] = createSignal('')
+  const unbindButton = () => {
+    setActionName('queryBinding')
+    clearValideFun()
+  }
+  const unbindInvitationCode = () => {
+    if (verifyInvitation()) {
+      return
+    }
+    // setUnbindModel(true)
+    fetch("/app/invitationCode/acquiresTheBoundUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        account: formData().userAccount,
+        password: formData().password,
+        key: formData().imgKey,
+        value: formData().imgVerificationCode.toLocaleLowerCase()
+      })
+    }).then((res) => {
+      console.log(res)
+      res.json().then((resp) => {
+        if (resp.status === 200) {
+          setUserInvitationCode(resp.data.invitationCode)
+          setUserInvitationAccount(resp.data.account)
+          setInvitationId(resp.data.id)
+          setUnbindModel(true)
+        } else {
+          setToastMessage(resp.message ? resp.message : '暂无数据')
+          setToastShow(true);
+          setTimeout(() => {
+            setToastShow(false);
+          }, 2000)
+        }
+      })
+    }).catch(() => {
+      setUnbindModel(false)
+      setToastMessage('系统异常')
+      setToastShow(true);
+      setTimeout(() => {
+        setToastShow(false);
+      }, 2000)
+    })
+  }
+  const closeUnbindTip = () => {
+    setTipModel(true)
+    setUnbindModel(false)
+  }
+  const closeUnbind = () => {
+    if (verifyInvitation()) {
+      return
+    }
+    fetch("/app/invitationCode/untie", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        account: formData().userAccount,
+        password: formData().password,
+        id: invitationId()
+      })
+    }).then((res) => {
+      console.log(res)
+      setUnbindModel(false)
+      setTipModel(false)
+      res.json().then((resp) => {
+        let message
+        if (resp.status === 200) {
+          message = "解绑成功"
+        } else {
+          message = resp.message
+        }
+        setToastMessage(message)
+        setToastShow(true);
+        setTimeout(() => {
+          setToastShow(false);
+        }, 2000)
+      })
+    }).catch(() => {
+      setUnbindModel(false)
+      setToastMessage('系统异常')
+      setToastShow(true);
+      setTimeout(() => {
+        setToastShow(false);
+      }, 2000)
+    })
+  }
+  // 查询邀请用户
+  const [userListModel, setUserListModel] = createSignal(false)
+  const [userList, setUserList] = createSignal([
+    {
+      account: '',
+      invitationCode: ''
+    }
+  ])
+  // 获取邀请列表
+  const userListButton = () => {
+    setActionName('queryInvitation')
+    clearValideFun()
+  }
+  const getUserList = () => {
+    return new Promise((resolve: any, reject: any) => {
+      fetch("app/invitationCode/getInvitedUsers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          account: formData().userAccount,
+          password: formData().password,
+          key: formData().imgKey,
+          value: formData().imgVerificationCode.toLocaleLowerCase()
+        })
+      })
+        .then(res => {
+          res.json().then(resp => {
+            if (resp.status === 200) {
+              // resolve(resp)
+              setUserList(resp.data)
+              resolve(resp.data)
+            } else {
+              reject(resp)
+            }
+          })
+        })
+        .catch(() => {
+          reject({message: '系统异常'})
+        })
+    })
+  }
+  const invitationUserList = () => {
+    if (verifyInvitation()) {
+      return
+    }
+    getUserList().then(() => {
+      setUserListModel(true)
+    }).catch((error) => {
+      setToastMessage(error.message)
+      setToastShow(true);
+      setTimeout(() => {
+        setToastShow(false);
+      }, 2000)
+    })
+  }
+  const [deleteCode, setDeleteCode] = createSignal([])
+  const closeUserListTip = () => {
+    console.log(deleteCode())
+    if (deleteCode().length > 0) {
+      setTipModel(true)
+      setUserListModel(false)
+    } else {
+      setToastMessage('请勾选选项')
+      setToastShow(true);
+      setTimeout(() => {
+        setToastShow(false);
+      }, 2000)
+      return
+    }
+  }
+  const closeUserList = () => {
+    fetch("/app/invitationCode/deleteInvite", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        account: formData().userAccount,
+        password: formData().password,
+        deleteCode: deleteCode()
+      })
+    }).then((res) => {
+      res.json().then((resp) => {
+        if (resp.status === 200) {
+          setUserListModel(false)
+          setTipModel(false)
+        }
+        setToastMessage(resp.message)
+        setToastShow(true);
+        setTimeout(() => {
+          setToastShow(false);
+        }, 2000)
+      })
+    }).catch(() => {
+      setUnbindModel(false)
+      setToastMessage('系统异常')
+      setToastShow(true);
+      setTimeout(() => {
+        setToastShow(false);
+      }, 2000)
+    })
+  }
+  const handleCheck = (e: any, item: any, i: any) => {
+    const rel = deleteCode()
+    const index = rel.indexOf(item.invitationCode)
+    console.log('index', index)
+    if (e.target.checked) {
+      rel.push(item.invitationCode)
+      setDeleteCode(rel)
+    } else {
+      rel.splice(index, 1)
+      setDeleteCode(rel)
+    }
+    console.log(deleteCode())
+  }
+  // 确认
+  const handleFun = () => {
+    switch (actionName()) {
+      case 'detailInvitation':
+        queryInvitationCode()
+        break;
+      case 'bindingInvitation':
+        bindingInvitationCode()
+        break;
+      case 'queryBinding':
+        unbindInvitationCode()
+        break;
+      case 'queryInvitation':
+        invitationUserList()
+        break;
+      default:
+        break;
+    }
+  }
+  // 取消
+  const cancleFun = () => {
+    setActionName('registration')
+    setFormData({
+      userAccount: '',
+      password: '',
+      confirmPassword: '',
+      verificationCode: '',
+      phoneNumber: '',
+      imgVerificationCode: '',
+      imgKey: formData().imgKey
+    })
+    clearFormData(formData())
+    clearValideFun()
+  }
+  // 提示弹框
+  const [tipModel, setTipModel] = createSignal(false)
+  // 提示确认
+  const handleOk = () => {
+    switch (actionName()) {
+      case 'queryBinding':
+        closeUnbind()
+        break;
+      case 'queryInvitation':
+        closeUserList()
+        break;
+      default:
+        break;
+    }
+  }
+  // 提示取消
+  const handleCancle = () => {
+    switch (actionName()) {
+      case 'queryBinding':
+        setUnbindModel(true)
+        setTipModel(false)
+        break;
+      case 'queryInvitation':
+        setUserListModel(true)
+        setTipModel(false)
+        setDeleteCode([])
+        break;
+      default:
+        break;
+    }
+  }
+
   return (
     
     <div>
@@ -647,18 +1128,25 @@ export function RegistrationPage() {
             <div class="success-middle-text">
               恭喜，注册成功
             </div>
+            <div class="success-middle-message">
+              这是您的邀请码，请注意保存：<span>{overCode()}</span>
+            </div>
           </div>
           <div class="success-bottom">
             <span onClick={goBack}>返回登录</span>
           </div>
         </div> :
         <form class="registration-form">
-          <h2>注册账号</h2>
+          <h2>{titleName()[actionName()]}</h2>
           <div class={"toast" + (toastShow() ? " show" : "")}>{toastMessage()}</div>
           <div class="form-group">
             <label for="userAccount">账号:</label>
             <input type="text" name="userAccount" id="userAccount" placeholder="请输入账号" onInput={handleInputChange} onBlur={handleOnChange} />
-            <img class="account-icon" src={light()} alt="" srcset="" />
+            <Show
+              when={actionName() === 'registration'}
+            >
+              <img class="account-icon" src={light()} alt="" srcset="" />
+            </Show>
             <div>
               {vaildDataShow().userAccount && <span class="error-message">{vaildDataRequired().userAccount}</span>}
             </div>
@@ -671,28 +1159,32 @@ export function RegistrationPage() {
               {vaildDataShow().password && <span class="error-message">{vaildDataRequired().password}</span>}
             </div>
           </div>
-          <div class="form-group">
-            <div>
-              <label for="confirm-password">确认密码:</label>
-              <input type={isOpenConfirmEye() ? "text" : "password"} name="confirmPassword" id="confirmPassword" placeholder="请确认密码" onInput={handleInputChange} onBlur={makeConfirmPassword} />
-              <img class="account-icon" src={isOpenConfirmEye() ? openEye : closeEye} alt="" srcset="" onClick={openConfirmEyeFun} />
+          <Show
+            when={actionName() === 'registration'}
+          >
+            <div class="form-group">
+              <div>
+                <label for="confirm-password">确认密码:</label>
+                <input type={isOpenConfirmEye() ? "text" : "password"} name="confirmPassword" id="confirmPassword" placeholder="请确认密码" onInput={handleInputChange} onBlur={makeConfirmPassword} />
+                <img class="account-icon" src={isOpenConfirmEye() ? openEye : closeEye} alt="" srcset="" onClick={openConfirmEyeFun} />
+              </div>
+              <div>
+                {vaildDataShow().confirmPassword && <span class="error-message">{vaildDataRequired().confirmPassword}</span>}
+              </div>
             </div>
-            <div>
-              {vaildDataShow().confirmPassword && <span class="error-message">{vaildDataRequired().confirmPassword}</span>}
+            <div class="form-group">
+              <label for="phone-number">手机号码:</label>
+              <div class='flex'>
+                <input type="text" disabled={isCodeSent()} name="phoneNumber" id="phoneNumber" placeholder="请输入手机号码" onInput={handleInputChange} />
+              </div>
+              <div>
+                {vaildDataShow().phoneNumber && <span class="error-message">{vaildDataRequired().phoneNumber}</span>}
+              </div>
+              {/* <div>
+                <span class="error-message">{codeErrorPhoneMessage()}</span>
+              </div> */}
             </div>
-          </div>
-          <div class="form-group">
-            <label for="phone-number">手机号码:</label>
-            <div class='flex'>
-              <input type="text" disabled={isCodeSent()} name="phoneNumber" id="phoneNumber" placeholder="请输入手机号码" onInput={handleInputChange} />
-            </div>
-            <div>
-              {vaildDataShow().phoneNumber && <span class="error-message">{vaildDataRequired().phoneNumber}</span>}
-            </div>
-            {/* <div>
-              <span class="error-message">{codeErrorPhoneMessage()}</span>
-            </div> */}
-          </div>
+          </Show>
           {/* <button class="send-code-button" type="button" disabled={isSubmitting()} onClick={handleDebouncedSubmit}>
             测试
           </button> */}
@@ -706,9 +1198,13 @@ export function RegistrationPage() {
               <div class='marbottom'>
                 {vaildDataShow().imgVerificationCode && <span>{vaildDataRequired().imgVerificationCode}</span>}
               </div>
-              <button class="send-code-button" type="button" disabled={isSendingCode()} onClick={sendVerificationCode}>
-                {isSendingCode() ? '发送中...' : '发送短信'}
-              </button>
+              <Show
+                when={actionName() === 'registration'}
+              >
+                <button class="send-code-button" type="button" disabled={isSendingCode()} onClick={sendVerificationCode}>
+                  {isSendingCode() ? '发送中...' : '发送短信'}
+                </button>
+              </Show>
             </div> :
               <div class="form-group">
                 <label for="verification-code">短信验证码:</label>
@@ -725,9 +1221,154 @@ export function RegistrationPage() {
                   </button>
                 </div>
               </div>
-
           }
+          <Show
+            when={actionName() === 'bindingInvitation'}
+          >
+            <div class="form-group">
+              <label for="invitationCode">邀请码:</label>
+              <input type="text" name="invitationCode" id="invitationCode" placeholder="请输入邀请码" onInput={handleInputInvitation} />
+              <div>
+                {vaildDataShow().invitationCode && <span class="error-message">{vaildDataRequired().invitationCode}</span>}
+              </div>
+            </div>
+          </Show>
+          <Show
+            when={actionName() !== 'registration'}
+          >
+            <div class='invitation-button'>
+              <button class="invitation-button-handle" type="button" onClick={handleFun}>
+                确认
+              </button>
+              <button class="invitation-button-cancle" type="button" onClick={cancleFun}>
+                取消
+              </button>
+            </div>
+          </Show>
         </form>
+      }
+      <Show
+        when={!isAddOver()}
+      >
+        <div class='invitation-code'>
+          <button class="send-code-button" type="button" onClick={queryButton}>
+            查询邀请码
+          </button>
+          <button class="send-code-button" type="button" onClick={bindingButton}>
+            绑定邀请码
+          </button>
+          <button class="send-code-button" type="button" onClick={unbindButton}>
+            查询绑定用户
+          </button>
+          <button class="send-code-button" type="button" onClick={userListButton}>
+            查询邀请用户
+          </button>
+        </div>
+      </Show>
+      {/* 查看邀请码 */}
+      {
+        detailModel() ?
+          <Model title={"查看邀请码"}>
+            <div class='model-detail-children'>
+              <div class='detail-children-message'>
+              <Show
+                when={invitationMessageBool()}
+                fallback={<span>{invitationMessage()}</span>}
+              >
+                您的邀请码是：<span style={{color:'#e90000'}}>{invitationMessage()}</span>
+              </Show>
+              </div>
+              <button class="detail-children-button" type="button" onClick={closeDetial}>
+                关闭
+              </button>
+            </div>
+          </Model>
+        : ''
+      }
+      {/* 查询绑定用户 */}
+      {
+        unbindModel() ?
+          <Model title={"查询绑定用户"}>
+            {/* <div class='model-unbind-children'>
+              <button class="unbind-children-button" type="button" onClick={closeUnbind}>
+                解绑验证码
+              </button>
+            </div> */}
+            <div class='model-detail-children'>
+              <div class='detail-children-message'>
+                账号：<span>{userInvitationAccount()}</span>
+              </div>
+              <div class='detail-children-message'>
+                邀请码：<span style={{color: '#e90000'}}>{userInvitationCode()}</span>
+              </div>
+              <button class="detail-children-button" type="button" onClick={closeUnbindTip}>
+                解绑邀请码
+              </button>
+              <button class="detail-children-button detail-children-close" type="button" onClick={() => setUnbindModel(false)}>
+                关闭
+              </button>
+            </div>
+          </Model>
+        : ''
+      }
+      {/* 查询邀请用户 */}
+      {
+        userListModel() ?
+          <Model title={"查询邀请用户"}>
+            <div class='model-detail-children'>
+              <div class='detail-children-list'>
+                <table border="1" cellpadding="0" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>选项</th>
+                      <th>账号</th>
+                      <th>邀请码</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <For each={userList()}>{(item, i) =>
+                      <tr>
+                        <td>
+                          <input type="checkbox" onChange={(e) => handleCheck(e, item, i)} />
+                        </td>
+                        <td>{item.account}</td>
+                        <td>{item.invitationCode}</td>
+                        {/* <td>
+                          <span onClick={deleteLi(item)}>删除邀请</span>
+                        </td> */}
+                      </tr>
+                    }</For>
+                  </tbody>
+                </table>
+                
+              </div>
+              <button class="detail-children-button" type="button" onClick={closeUserListTip}>
+                删除邀请
+              </button>
+              <button class="detail-children-button detail-children-close" type="button" onClick={() => setUserListModel(false)}>
+                关闭
+              </button>
+            </div>
+          </Model>
+        : ''
+      }
+      {/* 解绑、删除提示 */}
+      {
+        tipModel() ?
+          <Model title={"提示"}>
+            <div class='model-detail-children'>
+              <div class='detail-children-message'>
+                { actionName() === 'queryBinding' ? '您正在进行解绑邀请码，是否继续' : (actionName() === 'queryInvitation' ? '您正在进行删除，是否继续' : '操作有误') }
+              </div>
+              <button class="detail-children-button" type="button" onClick={handleOk}>
+                确认
+              </button>
+              <button class="detail-children-button detail-children-close" type="button" onClick={handleCancle}>
+                取消
+              </button>
+            </div>
+          </Model>
+        : ''
       }
     </div>
   );
