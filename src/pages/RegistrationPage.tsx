@@ -7,6 +7,7 @@ import greenLightIcon from '../assets/greenLightIcon.png';
 import redLightIcon from '../assets/redLightIcon.png';
 import openEye from '../assets/openEye.png';
 import closeEye from '../assets/closeEye.png';
+import linkIcon from '../assets/linkIcon.jpg';
 import { encryptAes } from '../utils/crypto'
 import { Model } from './Model';
 
@@ -1114,157 +1115,187 @@ export function RegistrationPage() {
     }
   }
 
+  // 首次进入弹框
+  const [firstModel, setFirstModel] = createSignal(true)
+
   return (
     
     <div>
-      {
-        isAddOver() ? 
-        <div class="registration-success">
-          <div class="success-top">
-            注册
-          </div>
-          <div class="success-middle">
-            <img src={trueIcon} alt="" srcset="" />
-            <div class="success-middle-text">
-              恭喜，注册成功
+      <div class='registration-warp'>
+        {
+          isAddOver() ? 
+          <div class="registration-success">
+            <div class="success-top">
+              注册
             </div>
-            <div class="success-middle-message">
-              这是您的邀请码，请注意保存：<span>{overCode()}</span>
+            <div class="success-middle">
+              <img src={trueIcon} alt="" srcset="" />
+              <div class="success-middle-text">
+                恭喜，注册成功
+              </div>
+              <div class="success-middle-message">
+                这是您的邀请码，请注意保存：<span>{overCode()}</span>
+              </div>
             </div>
-          </div>
-          <div class="success-bottom">
-            <span onClick={goBack}>返回登录</span>
-          </div>
-        </div> :
-        <form class="registration-form">
-          <h2>{titleName()[actionName()]}</h2>
-          <div class={"toast" + (toastShow() ? " show" : "")}>{toastMessage()}</div>
-          <div class="form-group">
-            <label for="userAccount">账号:</label>
-            <input type="text" name="userAccount" id="userAccount" placeholder="请输入账号" onInput={handleInputChange} onBlur={handleOnChange} />
-            <Show
-              when={actionName() === 'registration'}
-            >
-              <img class="account-icon" src={light()} alt="" srcset="" />
-            </Show>
-            <div>
-              {vaildDataShow().userAccount && <span class="error-message">{vaildDataRequired().userAccount}</span>}
+            <div class="success-bottom">
+              <span onClick={goBack}>返回登录</span>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="password">密码:</label>
-            <input type={isOpenEye() ? "text" : "password"} name="password" id="password" placeholder="请输入密码" onInput={handleInputChange} onBlur={makeSurePassWord} />
-            <img class="account-icon" src={isOpenEye() ? openEye : closeEye} alt="" srcset="" onClick={openEyeFun} />
-            <div>
-              {vaildDataShow().password && <span class="error-message">{vaildDataRequired().password}</span>}
-            </div>
-          </div>
-          <Show
-            when={actionName() === 'registration'}
-          >
+          </div> :
+          <form class="registration-form">
+            <h2>{titleName()[actionName()]}</h2>
+            <div class={"toast" + (toastShow() ? " show" : "")}>{toastMessage()}</div>
             <div class="form-group">
-              <div>
-                <label for="confirm-password">确认密码:</label>
-                <input type={isOpenConfirmEye() ? "text" : "password"} name="confirmPassword" id="confirmPassword" placeholder="请确认密码" onInput={handleInputChange} onBlur={makeConfirmPassword} />
-                <img class="account-icon" src={isOpenConfirmEye() ? openEye : closeEye} alt="" srcset="" onClick={openConfirmEyeFun} />
-              </div>
-              <div>
-                {vaildDataShow().confirmPassword && <span class="error-message">{vaildDataRequired().confirmPassword}</span>}
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="phone-number">手机号码:</label>
-              <div class='flex'>
-                <input type="text" disabled={isCodeSent()} name="phoneNumber" id="phoneNumber" placeholder="请输入手机号码" onInput={handleInputChange} />
-              </div>
-              <div>
-                {vaildDataShow().phoneNumber && <span class="error-message">{vaildDataRequired().phoneNumber}</span>}
-              </div>
-              {/* <div>
-                <span class="error-message">{codeErrorPhoneMessage()}</span>
-              </div> */}
-            </div>
-          </Show>
-          {/* <button class="send-code-button" type="button" disabled={isSubmitting()} onClick={handleDebouncedSubmit}>
-            测试
-          </button> */}
-          {
-            !isCodeSent() ? <div class="form-group">
-              <label for="phone-number">图片验证码:</label>
-              <div class='flex'>
-                <input type="text" name="imgVerificationCode" id="imgVerificationCode" placeholder="请输入图片验证码" onInput={handleInputChange} />
-                <img style={{ cursor: "pointer" }} onClick={createImg} src={validImgUrl()} alt="验证码" />
-              </div>
-              <div class='marbottom'>
-                {vaildDataShow().imgVerificationCode && <span>{vaildDataRequired().imgVerificationCode}</span>}
-              </div>
+              <label for="userAccount">账号:</label>
+              <input type="text" name="userAccount" id="userAccount" placeholder="请输入账号" onInput={handleInputChange} onBlur={handleOnChange} />
               <Show
                 when={actionName() === 'registration'}
               >
-                <button class="send-code-button" type="button" disabled={isSendingCode()} onClick={sendVerificationCode}>
-                  {isSendingCode() ? '发送中...' : '发送短信'}
-                </button>
+                <img class="account-icon" src={light()} alt="" srcset="" />
               </Show>
-            </div> :
+              <div>
+                {vaildDataShow().userAccount && <span class="error-message">{vaildDataRequired().userAccount}</span>}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password">密码:</label>
+              <input type={isOpenEye() ? "text" : "password"} name="password" id="password" placeholder="请输入密码" onInput={handleInputChange} onBlur={makeSurePassWord} />
+              <img class="account-icon" src={isOpenEye() ? openEye : closeEye} alt="" srcset="" onClick={openEyeFun} />
+              <div>
+                {vaildDataShow().password && <span class="error-message">{vaildDataRequired().password}</span>}
+              </div>
+            </div>
+            <Show
+              when={actionName() === 'registration'}
+            >
               <div class="form-group">
-                <label for="verification-code">短信验证码:</label>
-                <div class='flex' >
-                  <input type="text" name="verificationCode" id="verificationCode" placeholder="请输入验证码" onInput={handleInputChange} />
-                </div>
-                <div class='marbottom'>
-                  {/* <span class="error-message">{codeErrorMessage()}</span> */}
-                  {vaildDataShow().verificationCode && <span>{vaildDataRequired().verificationCode}</span>}
+                <div>
+                  <label for="confirm-password">确认密码:</label>
+                  <input type={isOpenConfirmEye() ? "text" : "password"} name="confirmPassword" id="confirmPassword" placeholder="请确认密码" onInput={handleInputChange} onBlur={makeConfirmPassword} />
+                  <img class="account-icon" src={isOpenConfirmEye() ? openEye : closeEye} alt="" srcset="" onClick={openConfirmEyeFun} />
                 </div>
                 <div>
-                  <button class="send-code-button" type="button" disabled={isSubmitting()} onClick={handleDebouncedSubmit}>
-                    {isSubmitting() ? '添加中...' : '添加账号'}
-                  </button>
+                  {vaildDataShow().confirmPassword && <span class="error-message">{vaildDataRequired().confirmPassword}</span>}
                 </div>
               </div>
-          }
-          <Show
-            when={actionName() === 'bindingInvitation'}
-          >
-            <div class="form-group">
-              <label for="invitationCode">邀请码:</label>
-              <input type="text" name="invitationCode" id="invitationCode" placeholder="请输入邀请码" onInput={handleInputInvitation} />
-              <div>
-                {vaildDataShow().invitationCode && <span class="error-message">{vaildDataRequired().invitationCode}</span>}
+              <div class="form-group">
+                <label for="phone-number">手机号码:</label>
+                <div class='flex'>
+                  <input type="text" disabled={isCodeSent()} name="phoneNumber" id="phoneNumber" placeholder="请输入手机号码" onInput={handleInputChange} />
+                </div>
+                <div>
+                  {vaildDataShow().phoneNumber && <span class="error-message">{vaildDataRequired().phoneNumber}</span>}
+                </div>
+                {/* <div>
+                  <span class="error-message">{codeErrorPhoneMessage()}</span>
+                </div> */}
               </div>
+            </Show>
+            {/* <button class="send-code-button" type="button" disabled={isSubmitting()} onClick={handleDebouncedSubmit}>
+              测试
+            </button> */}
+            {
+              !isCodeSent() ? <div class="form-group">
+                <label for="phone-number">图片验证码:</label>
+                <div class='flex'>
+                  <input type="text" name="imgVerificationCode" id="imgVerificationCode" placeholder="请输入图片验证码" onInput={handleInputChange} />
+                  <img style={{ cursor: "pointer" }} onClick={createImg} src={validImgUrl()} alt="验证码" />
+                </div>
+                <div class='marbottom'>
+                  {vaildDataShow().imgVerificationCode && <span>{vaildDataRequired().imgVerificationCode}</span>}
+                </div>
+                <Show
+                  when={actionName() === 'registration'}
+                >
+                  <button class="send-code-button" type="button" disabled={isSendingCode()} onClick={sendVerificationCode}>
+                    {isSendingCode() ? '发送中...' : '发送短信'}
+                  </button>
+                </Show>
+              </div> :
+                <div class="form-group">
+                  <label for="verification-code">短信验证码:</label>
+                  <div class='flex' >
+                    <input type="text" name="verificationCode" id="verificationCode" placeholder="请输入验证码" onInput={handleInputChange} />
+                  </div>
+                  <div class='marbottom'>
+                    {/* <span class="error-message">{codeErrorMessage()}</span> */}
+                    {vaildDataShow().verificationCode && <span>{vaildDataRequired().verificationCode}</span>}
+                  </div>
+                  <div>
+                    <button class="send-code-button" type="button" disabled={isSubmitting()} onClick={handleDebouncedSubmit}>
+                      {isSubmitting() ? '添加中...' : '添加账号'}
+                    </button>
+                  </div>
+                </div>
+            }
+            <Show
+              when={actionName() === 'bindingInvitation'}
+            >
+              <div class="form-group">
+                <label for="invitationCode">邀请码:</label>
+                <input type="text" name="invitationCode" id="invitationCode" placeholder="请输入邀请码" onInput={handleInputInvitation} />
+                <div>
+                  {vaildDataShow().invitationCode && <span class="error-message">{vaildDataRequired().invitationCode}</span>}
+                </div>
+              </div>
+            </Show>
+            <Show
+              when={actionName() !== 'registration'}
+            >
+              <div class='invitation-button'>
+                <button class="invitation-button-handle" type="button" onClick={handleFun}>
+                  确认
+                </button>
+                <button class="invitation-button-cancle" type="button" onClick={cancleFun}>
+                  取消
+                </button>
+              </div>
+            </Show>
+          </form>
+        }
+        <Show
+          when={!isAddOver()}
+        >
+          <div class='invitation-code'>
+            <div class='invitation-code-link'>
+              <a href="https://www.bilibili.com/video/BV17X4y1h7cN/?vd_source=be13a062b0f347d3c237cc1a4b7e5a16" target="_blank" rel="noopener noreferrer">
+              邀请系统各项功能介绍<img src={linkIcon} alt="" srcset="" />
+              </a>
+              <a href="https://www.bilibili.com/video/BV1X24y1N7Hx/?vd_source=be13a062b0f347d3c237cc1a4b7e5a16" target="_blank" rel="noopener noreferrer">
+              分成比例和注意事项介绍<img src={linkIcon} alt="" srcset="" />
+              </a>
             </div>
-          </Show>
-          <Show
-            when={actionName() !== 'registration'}
-          >
-            <div class='invitation-button'>
-              <button class="invitation-button-handle" type="button" onClick={handleFun}>
-                确认
+            <div class='invitation-code-button'>
+              <button class="send-code-button" type="button" onClick={queryButton}>
+                查询邀请码
               </button>
-              <button class="invitation-button-cancle" type="button" onClick={cancleFun}>
-                取消
+              <button class="send-code-button" type="button" onClick={bindingButton}>
+                绑定邀请码
+              </button>
+              <button class="send-code-button" type="button" onClick={unbindButton}>
+                查询绑定用户
+              </button>
+              <button class="send-code-button" type="button" onClick={userListButton}>
+                查询邀请用户
               </button>
             </div>
-          </Show>
-        </form>
+          </div>
+        </Show>
+      </div>
+      {/* 首次进入提示 */}
+      {
+        firstModel() ?
+          <Model title={"提示"}>
+            <div class='first-model-children'>
+              <div class='model-children-message'>
+                如果您有志同道合的朋友，想邀请来一起玩 右方的邀请功能福利介绍，一定要看看！能让您白嫖和成为大佬
+              </div>
+              <button class="model-children-button" type="button" onClick={() => setFirstModel(false)}>
+                关闭
+              </button>
+            </div>
+          </Model>
+        : ''
       }
-      <Show
-        when={!isAddOver()}
-      >
-        <div class='invitation-code'>
-          <button class="send-code-button" type="button" onClick={queryButton}>
-            查询邀请码
-          </button>
-          <button class="send-code-button" type="button" onClick={bindingButton}>
-            绑定邀请码
-          </button>
-          <button class="send-code-button" type="button" onClick={unbindButton}>
-            查询绑定用户
-          </button>
-          <button class="send-code-button" type="button" onClick={userListButton}>
-            查询邀请用户
-          </button>
-        </div>
-      </Show>
       {/* 查看邀请码 */}
       {
         detailModel() ?
