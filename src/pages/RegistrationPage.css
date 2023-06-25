@@ -59,6 +59,12 @@ body {
   margin-bottom: 30px;
   position: relative;
 }
+.registration-form .form-group .form-account-tip {
+  position: absolute;
+  color: #e90000;
+  top: -2px;
+  left: 50px;
+}
 .registration-form .form-group .account-icon {
   position: absolute;
   right: 20px;

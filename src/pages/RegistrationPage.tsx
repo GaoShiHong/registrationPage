@@ -1155,6 +1155,7 @@ export function RegistrationPage() {
               <div>
                 {vaildDataShow().userAccount && <span class="error-message">{vaildDataRequired().userAccount}</span>}
               </div>
+              <div class='form-account-tip'>请用QQ号作为账号</div>
             </div>
             <div class="form-group">
               <label for="password">密码:</label>
