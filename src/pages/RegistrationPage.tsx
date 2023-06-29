@@ -41,6 +41,7 @@ export function RegistrationPage() {
   }
   // 红绿灯
   const [light, setLight] = createSignal(greenLightIcon)
+  const [lightMessage, setLightMessage] = createSignal('')
   // 是否注册成功
   const [isAddOver, setIsAddOver] = createSignal(false);
   // 注册成功返回的邀请码
@@ -136,6 +137,7 @@ export function RegistrationPage() {
         setLight(greenLightIcon)
       }).catch((resp) => {
         setToastMessage(resp ? resp.message : '系统异常')
+        setLightMessage(resp ? resp.message : '系统异常')
         setToastShow(true);
         setTimeout(() => {
           setToastShow(false);
@@ -510,6 +512,15 @@ export function RegistrationPage() {
   }
 
   const verifyCode = () => {
+    // 判断账号是否通过接口的校验
+    if(light() === redLightIcon) {
+      setToastMessage(lightMessage())
+      setToastShow(true);
+      setTimeout(() => {
+        setToastShow(false);
+      }, 2000)
+      return
+    }
     // 是否校验不通过
     let vaild = false
     // 必填校验判断
