@@ -14,8 +14,7 @@
   overflow: hidden;
 }
 .model .model-content {
-  background: white;
-  border: 1px solid #007bff;
+  background: #CFD8DC;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -31,7 +30,7 @@
 }
 .model .model-content .model-content-title {
   height: 60px;
-  background-color: #007bff;
+  background-color: #607D8B;
   color: #fff;
   padding-left: 10px;
   text-align: left;
@@ -45,11 +44,13 @@
   text-align: center;
 }
 .model .model-content .model-detail-children .detail-children-button {
-  background-color: #007bff;
+  background-color: #4B72C2;
   color: #fff;
   border: none;
-  padding: 8px 25px;
-  font-size: 20px;
+  width: 200px;
+  height: 48px;
+  line-height: 48px;
+  font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
@@ -58,8 +59,8 @@
 }
 .model .model-content .model-detail-children .detail-children-button.detail-children-close {
   background-color: #fff;
-  color: #007bff;
-  border: 1px solid #007bff;
+  color: #4B72C2;
+  border: 1px solid #4B72C2;
   margin-left: 20px;
 }
 .model .model-content .model-detail-children .detail-children-list table {
@@ -97,11 +98,13 @@
   line-height: 35px;
 }
 .model .model-content .first-model-children .model-children-button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 8px 25px;
-  font-size: 20px;
+  background-color: #fff;
+  color: #4B72C2;
+  border: 1px solid #4B72C2;
+  width: 200px;
+  height: 48px;
+  line-height: 48px;
+  font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;

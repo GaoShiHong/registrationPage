@@ -1,7 +1,183 @@
 .registration-warp {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
+  box-sizing: border-box;
+}
+.registration-warp .registration-form {
+  background: #242424;
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  width: 850px;
+  padding: 25px;
+  color: #fff;
+}
+.registration-warp .registration-form .registration-form-h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #fff;
+}
+.registration-warp .registration-form .registration-form-body {
+  padding-right: 50px;
+}
+.registration-warp .registration-form .registration-form-body .form-group {
+  display: flex;
+  margin-bottom: 30px;
+  position: relative;
+  align-items: center;
+}
+.registration-warp .registration-form .registration-form-body .form-group label {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  width: 120px;
+  margin-right: 20px;
+  text-align: right;
+}
+.registration-warp .registration-form .registration-form-body .form-group input {
+  flex: 1;
+  width: 100%;
+  padding: 0 20px;
+  border-radius: 5px;
+  border: 1px solid #3D3D3D;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  height: 48px;
+  line-height: 48px;
+  background-color: #242424 !important;
+  color: #fff;
+}
+.registration-warp .registration-form .registration-form-body .form-group input:disabled {
+  color: #aaaaaa !important;
+  cursor: no-drop;
+}
+.registration-warp .registration-form .registration-form-body .form-group input:-internal-autofill-selected {
+  color: #fff;
+  background-color: #242424 !important;
+}
+.registration-warp .registration-form .registration-form-body .form-group .form-group-img {
+  cursor: pointer;
+  margin-left: 20px;
+}
+.registration-warp .registration-form .registration-form-body .form-group .form-account-tip {
+  position: absolute;
+  color: #e90000;
+  top: -25px;
+  left: 140px;
+}
+.registration-warp .registration-form .registration-form-body .form-group .account-icon {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+  width: 20px;
+  cursor: pointer;
+}
+.registration-warp .registration-form .registration-form-body .form-group .marbottom {
+  height: 30px;
+  position: relative;
+  color: red;
+  font-size: 14px;
+}
+.registration-warp .registration-form .registration-form-body .form-group .error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+  position: absolute;
+  bottom: -22px;
+  left: 140px;
+}
+.registration-warp .registration-form .registration-form-body .form-body-button {
+  text-align: center;
+}
+.registration-warp .registration-form .registration-form-body .form-body-button .send-code-button {
+  background-color: #4B72C2;
+  color: #fff;
+  border: none;
+  width: 200px;
+  height: 48px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  margin-bottom: 20px;
+  line-height: 48px;
+  text-align: center;
+}
+.registration-warp .registration-form .registration-form-body .form-body-button .send-code-button:hover {
+  background-color: #0069d9;
+}
+.registration-warp .registration-form .registration-form-code {
+  border-top: 2px solid #3D3D3D;
+  padding: 25px 30px;
+}
+.registration-warp .registration-form .registration-form-code .form-code-link {
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  color: #7F7F7F;
+}
+.registration-warp .registration-form .registration-form-code .form-code-link .code-link-a a {
+  display: inline-block;
+  color: #333;
+  font-size: 16px;
+  line-height: 20px;
+  margin-left: 20px;
+  color: #007bff;
+}
+.registration-warp .registration-form .registration-form-code .form-code-link .code-link-a a img {
+  width: 15px;
+  margin-left: 5px;
+}
+.registration-warp .registration-form .registration-form-code .form-code-invitation {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.registration-warp .registration-form .registration-form-code .form-code-invitation .code-invitation-button {
+  background-color: #fff;
+  color: #242424;
+  border: none;
+  width: 350px;
+  height: 48px;
+  line-height: 48px;
+  text-align: center;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+.registration-warp .registration-form .registration-form-code .form-code-invitation .code-invitation-button.active {
+  background-color: #AAC0EE;
+  color: #242424;
+}
+.flex {
+  display: flex;
+  align-items: center;
+}
+.flex img {
+  padding-left: 20px;
+  float: right;
+}
+.toast {
+  visibility: hidden;
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: green;
+  color: #fff;
+  text-align: center;
+  padding: 15px;
+  border-radius: 5px;
+  z-index: 100001;
+}
+.toast.show {
+  visibility: visible;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
 .registration-success {
   background: #fff;
@@ -11,7 +187,7 @@
   box-sizing: border-box;
 }
 .registration-success .success-top {
-  background: #3d83f8;
+  background: #607D8B;
   height: 50px;
   text-align: center;
   line-height: 50px;
@@ -38,7 +214,7 @@
 }
 .registration-success .success-bottom {
   height: 50px;
-  background: #3d83f8;
+  background: #607D8B;
   color: #fff;
   text-align: center;
   line-height: 50px;
@@ -46,70 +222,50 @@
 .registration-success .success-bottom span {
   cursor: pointer;
 }
-.invitation-code {
-  margin-left: 150px;
-  width: 300px;
-  background-color: #fff;
-  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  text-align: center;
-  padding: 20px;
-}
-.invitation-code .invitation-code-link a {
-  display: inline-block;
-  color: #333;
-  font-size: 16px;
-  line-height: 20px;
-  margin-bottom: 10px;
-  color: #007bff;
-}
-.invitation-code .invitation-code-link a img {
-  width: 15px;
-  margin-left: 5px;
-}
-.invitation-code .invitation-code-button {
-  height: 450px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 20px;
-}
-.invitation-code .invitation-code-button button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 14px 20px;
-  font-size: 18px;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 160px;
-  transition: background-color 0.2s ease-in-out;
-  margin-bottom: 20px;
-}
 .invitation-button {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  margin-top: 40px;
+  margin-bottom: 60px;
 }
 .invitation-button button {
   font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
-  width: 100px;
-  height: 40px;
-  line-height: 40px;
+  width: 200px;
+  height: 48px;
+  line-height: 48px;
   text-align: center;
   transition: background-color 0.2s ease-in-out;
-  margin-bottom: 20px;
 }
 .invitation-button .invitation-button-handle {
-  background-color: #007bff;
+  background-color: #4B72C2;
   color: #fff;
   border: none;
-  margin-right: 20px;
+  margin-right: 50px;
 }
 .invitation-button .invitation-button-cancle {
   background-color: #fff;
-  color: #007bff;
-  border: 1px solid #007bff;
+  color: #4B72C2;
+  border: 1px solid #4B72C2;
+}
+@keyframes fadein {
+  from {
+    top: 0;
+    opacity: 0;
+  }
+  to {
+    top: 30px;
+    opacity: 1;
+  }
+}
+@keyframes fadeout {
+  from {
+    top: 30px;
+    opacity: 1;
+  }
+  to {
+    top: 0;
+    opacity: 0;
+  }
 }

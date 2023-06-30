@@ -1,7 +1,186 @@
 .registration-warp {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
+  box-sizing: border-box;
+  .registration-form {
+    background: #242424;
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 850px;
+    padding: 25px;
+    color: #fff;
+    .registration-form-h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #fff;
+    }
+    .registration-form-body {
+      padding-right: 50px;
+      .form-group {
+        display: flex;
+        margin-bottom: 30px;
+        position: relative;
+        align-items: center;
+        label {
+          display: block;
+          font-size: 18px;
+          font-weight: 700;
+          margin-bottom: 5px;
+          width: 120px;
+          margin-right: 20px;
+          text-align: right;
+        }
+        input {
+          flex: 1;
+          width: 100%;
+          padding: 0 20px;
+          border-radius: 5px;
+          border: 1px solid #3D3D3D;
+          font-size: 16px;
+          font-family: Arial, sans-serif;
+          height: 48px;
+          line-height: 48px;
+          background-color: #242424 !important;
+          color: #fff;
+          &:disabled {
+            color: rgb(170, 170, 170) !important;
+            cursor: no-drop;
+          }
+          &:-internal-autofill-selected {
+            color: #fff;
+            background-color: #242424 !important;
+          }
+        }
+        .form-group-img {
+          cursor: pointer;
+          margin-left: 20px;
+        }
+        .form-account-tip {
+          position: absolute;
+          color: #e90000;
+          top: -25px;
+          left: 140px;
+        }
+        .account-icon {
+          position: absolute;
+          right: 20px;
+          top: 15px;
+          width: 20px;
+          cursor: pointer;
+        }
+        .marbottom {
+          height: 30px;
+          position: relative;
+          color: red;
+          font-size: 14px;
+        }
+        .error-message {
+          color: red;
+          font-size: 14px;
+          margin-top: 5px;
+          position: absolute;
+          bottom: -22px;
+          left: 140px;
+        }
+      }
+      .form-body-button {
+        text-align: center;
+        .send-code-button {
+          background-color: #4B72C2;
+          color: #fff;
+          border: none;
+          width: 200px;
+          height: 48px;
+          font-size: 16px;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: background-color 0.2s ease-in-out;
+          margin-bottom: 20px;
+          line-height: 48px;
+          text-align: center;
+          &:hover {
+            background-color: #0069d9;
+          }
+        }
+      }
+    }
+    .registration-form-code {
+      border-top: 2px solid #3D3D3D;
+      padding: 25px 30px;
+      .form-code-link {
+        font-size: 16px;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        color: #7F7F7F;
+        .code-link-a {
+          a {
+            display: inline-block;
+            color: #333;
+            font-size: 16px;
+            // text-decoration: none;
+            line-height: 20px;
+            margin-left: 20px;
+            color: #007bff;
+            img {
+              width: 15px;
+              margin-left: 5px;
+            }
+          }
+        }
+      }
+      .form-code-invitation {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        .code-invitation-button {
+          background-color: #fff;
+          color: #242424;
+          border: none;
+          width: 350px;
+          height: 48px;
+          line-height: 48px;
+          text-align: center;
+          font-size: 16px;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-bottom: 20px;
+          &.active {
+            background-color: #AAC0EE;
+            color: #242424;
+          }
+        }
+      }
+    }
+  }
+}
+.flex {
+  display: flex;
+  align-items: center;
+}
+.flex img {
+  padding-left: 20px;
+  float: right;
+}
+.toast {
+  visibility: hidden;
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: green;
+  color: #fff;
+  text-align: center;
+  padding: 15px;
+  border-radius: 5px;
+  z-index: 100001;
+  &.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  }
 }
 .registration-success {
   background: #fff;
@@ -10,7 +189,7 @@
   width: 500px;
   box-sizing: border-box;
   .success-top {
-    background: #3d83f8;
+    background: #607D8B;
     height: 50px;
     text-align: center;
     line-height: 50px;
@@ -37,7 +216,7 @@
   }
   .success-bottom {
     height: 50px;
-    background: #3d83f8;
+    background: #607D8B;
     color: #fff;
     text-align: center;
     line-height: 50px;
@@ -46,76 +225,39 @@
     }
   }
 }
-.invitation-code {
-  // position: absolute;
-  // top: 20%;
-  // right: 10%;
-  margin-left: 150px;
-  width: 300px;
-  background-color: #fff;
-  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  text-align: center;
-  padding: 20px;
-  .invitation-code-link {
-    a {
-      display: inline-block;
-      color: #333;
-      font-size: 16px;
-      // text-decoration: none;
-      line-height: 20px;
-      margin-bottom: 10px;
-      color: #007bff;
-      img {
-        width: 15px;
-        margin-left: 5px;
-      }
-    }
-  }
-  .invitation-code-button {
-    height: 450px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 20px;
-    button {
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      padding: 14px 20px;
-      font-size: 18px;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 160px;
-      transition: background-color 0.2s ease-in-out;
-      margin-bottom: 20px;
-    }
-  }
-}
 .invitation-button {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  margin-top: 40px;
+  margin-bottom: 60px;
   button {
     font-size: 16px;
     border-radius: 5px;
     cursor: pointer;
-    width: 100px;
-    height: 40px;
-    line-height: 40px;
+    width: 200px;
+    height: 48px;
+    line-height: 48px;
     text-align: center;
     transition: background-color 0.2s ease-in-out;
-    margin-bottom: 20px;
   }
   .invitation-button-handle {
-    background-color: #007bff;
+    background-color: #4B72C2;
     color: #fff;
     border: none;
-    margin-right: 20px;
+    margin-right: 50px;
   }
   .invitation-button-cancle {
     background-color: #fff;
-    color: #007bff;
-    border: 1px solid #007bff;
+    color: #4B72C2;
+    border: 1px solid #4B72C2;
   }
+}
+@keyframes fadein {
+  from {top: 0; opacity: 0;}
+  to {top: 30px; opacity: 1;}
+}
+
+@keyframes fadeout {
+  from {top: 30px; opacity: 1;}
+  to {top: 0; opacity: 0;}
 }
