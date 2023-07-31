@@ -1212,16 +1212,18 @@ export function RegistrationPage() {
                       </div>
                     </Show>
                 </div> :
-                  <div class="form-group">
-                    <label for="verification-code">短信验证码:</label>
-                    <div class='flex' >
-                      <input type="text" name="verificationCode" id="verificationCode" placeholder="请输入验证码" onInput={handleInputChange} />
+                  <div>
+                    <div class="form-group">
+                      <label for="verification-code">短信验证码:</label>
+                      <div class='flex' >
+                        <input type="text" name="verificationCode" id="verificationCode" placeholder="请输入验证码" onInput={handleInputChange} />
+                      </div>
+                      <div class='marbottom'>
+                        {/* <span class="error-message">{codeErrorMessage()}</span> */}
+                        {vaildDataShow().verificationCode && <span>{vaildDataRequired().verificationCode}</span>}
+                      </div>
                     </div>
-                    <div class='marbottom'>
-                      {/* <span class="error-message">{codeErrorMessage()}</span> */}
-                      {vaildDataShow().verificationCode && <span>{vaildDataRequired().verificationCode}</span>}
-                    </div>
-                    <div>
+                    <div class='form-body-button'>
                       <button class="send-code-button" type="button" disabled={isSubmitting()} onClick={handleDebouncedSubmit}>
                         {isSubmitting() ? '添加中...' : '添加账号'}
                       </button>
