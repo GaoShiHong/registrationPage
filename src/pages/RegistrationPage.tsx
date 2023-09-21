@@ -17,9 +17,10 @@ export function RegistrationPage() {
     password: '',
     confirmPassword: '',
     verificationCode: '',
-    phoneNumber: '',
+    // phoneNumber: '',
     imgVerificationCode: '',
-    imgKey: ''
+    imgKey: '',
+    activationCode: '',
   });
 
   const [isSubmitting, setIsSubmitting] = createSignal(false);
@@ -52,9 +53,10 @@ export function RegistrationPage() {
     password: '请输入密码',
     confirmPassword: '请输入确认密码',
     verificationCode: '请输入短信验证码',
-    phoneNumber: '请输入手机号码',
+    // phoneNumber: '请输入手机号码',
     imgVerificationCode: '请输入图片验证码',
-    invitationCode: '请输入邀请码'
+    invitationCode: '请输入邀请码',
+    activationCode: '请输入激活码'
   });
   // 是否触发校验
   const [vaildDataShow, setVaildDataShow] = createSignal({
@@ -62,9 +64,10 @@ export function RegistrationPage() {
     password: false,
     confirmPassword: false,
     verificationCode: false,
-    phoneNumber: false,
+    // phoneNumber: false,
     imgVerificationCode: false,
-    invitationCode: false
+    invitationCode: false,
+    activationCode: false,
   });
   // 判断账号是否注册过
   const isAccountRegistra = (value: string) => {
@@ -106,9 +109,10 @@ export function RegistrationPage() {
       password: false,
       confirmPassword: false,
       verificationCode: false,
-      phoneNumber: false,
+      // phoneNumber: false,
       imgVerificationCode: false,
-      invitationCode: false
+      invitationCode: false,
+      activationCode: false,
     })
   }
   // 返回登录
@@ -118,9 +122,10 @@ export function RegistrationPage() {
       password: '',
       confirmPassword: '',
       verificationCode: '',
-      phoneNumber: '',
+      // phoneNumber: '',
       imgVerificationCode: '',
-      imgKey: formData().imgKey
+      imgKey: formData().imgKey,
+      activationCode: '',
     })
     clearFormData(formData())
     setIsAddOver(false)
@@ -180,8 +185,9 @@ export function RegistrationPage() {
       body: JSON.stringify({
         account: encryptAes(formData().userAccount),
         pwd: encryptAes(formData().password),
-        phoneNum: encryptAes(formData().phoneNumber),
-        smsCode: encryptAes(formData().verificationCode)
+        // phoneNum: encryptAes(formData().phoneNumber),
+        // smsCode: encryptAes(formData().verificationCode),
+        activationCode: encryptAes(formData().activationCode),
       })
     })
       .then(res => {
@@ -207,10 +213,10 @@ export function RegistrationPage() {
             setTimeout(() => {
               setToastShow(false);
             }, 2000)
-            setFormData({
-              ...formData(),
-              phoneNumber: ''
-            })
+            // setFormData({
+            //   ...formData(),
+            //   phoneNumber: ''
+            // })
             clearFormData(formData())
             setIsCodeSent(false)
           } else {
@@ -526,7 +532,7 @@ export function RegistrationPage() {
     // 必填校验判断
     for (const key in formData()) {
       const item: any = formData()[key]
-      if (!item) {
+      if (!item && key !== 'verificationCode' && key !== 'imgVerificationCode') {
         setVaildDataShow({
           ...vaildDataShow(),
           [key]: true
@@ -599,13 +605,13 @@ export function RegistrationPage() {
         })
       }
     }
-
-    if (formData().verificationCode) {
-      setCodeErrorMessage('');
-    } else {
-      setCodeErrorMessage('请输入正确的验证码');
-      vaild = true
-    }
+    // 短信验证码校验
+    // if (formData().verificationCode) {
+    //   setCodeErrorMessage('');
+    // } else {
+    //   setCodeErrorMessage('请输入正确的验证码');
+    //   vaild = true
+    // }
     if (vaild) {
       console.log(vaildDataRequired(), vaildDataShow(), formData())
       return
@@ -616,9 +622,10 @@ export function RegistrationPage() {
         password: false,
         confirmPassword: false,
         verificationCode: false,
-        phoneNumber: false,
+        // phoneNumber: false,
         imgVerificationCode: false,
-        invitationCode: false
+        invitationCode: false,
+        activationCode: false,
       })
     }
 
@@ -1087,9 +1094,10 @@ export function RegistrationPage() {
       password: '',
       confirmPassword: '',
       verificationCode: '',
-      phoneNumber: '',
+      // phoneNumber: '',
       imgVerificationCode: '',
-      imgKey: formData().imgKey
+      imgKey: formData().imgKey,
+      activationCode: '',
     })
     clearFormData(formData())
     clearValideFun()
@@ -1183,31 +1191,40 @@ export function RegistrationPage() {
                   {vaildDataShow().confirmPassword && <span class="error-message">{vaildDataRequired().confirmPassword}</span>}
                 </div>
                 <div class="form-group">
+                  <label for="activation-code">激活码:</label>
+                  <input type="text" name="activationCode" id="activationCode" placeholder="请输入激活码" onInput={handleInputChange} />
+                  {vaildDataShow().activationCode && <span class="error-message">{vaildDataRequired().activationCode}</span>}
+                </div>
+                {/* <div class="form-group">
                   <label for="phone-number">手机号码:</label>
                   <input type="text" disabled={isCodeSent()} name="phoneNumber" id="phoneNumber" placeholder="请输入手机号码" onInput={handleInputChange} />
                   {vaildDataShow().phoneNumber && <span class="error-message">{vaildDataRequired().phoneNumber}</span>}
-                  {/* <div>
-                    <span class="error-message">{codeErrorPhoneMessage()}</span>
-                  </div> */}
-                </div>
+                </div> */}
               </Show>
               {/* <button class="send-code-button" type="button" disabled={isSubmitting()} onClick={handleDebouncedSubmit}>
                 测试
               </button> */}
               {
                 !isCodeSent() ? <div>
-                    <div class="form-group">
-                      <label for="phone-number">图片验证码:</label>
-                      <input type="text" name="imgVerificationCode" id="imgVerificationCode" placeholder="请输入图片验证码" onInput={handleInputChange} />
-                      <img class='form-group-img' onClick={createImg} src={validImgUrl()} alt="验证码" />
-                      {vaildDataShow().imgVerificationCode && <span class="error-message">{vaildDataRequired().imgVerificationCode}</span>}
-                    </div>
+                    <Show when={actionName() !== 'registration'}>
+                      <div class="form-group">
+                        <label for="phone-number">图片验证码:</label>
+                        <input type="text" name="imgVerificationCode" id="imgVerificationCode" placeholder="请输入图片验证码" onInput={handleInputChange} />
+                        <img class='form-group-img' onClick={createImg} src={validImgUrl()} alt="验证码" />
+                        {vaildDataShow().imgVerificationCode && <span class="error-message">{vaildDataRequired().imgVerificationCode}</span>}
+                      </div>
+                    </Show>
                     <Show
                       when={actionName() === 'registration'}
                     >
-                      <div class='form-body-button'>
+                      {/* <div class='form-body-button'>
                         <button class="send-code-button" type="button" disabled={isSendingCode()} onClick={sendVerificationCode}>
                           {isSendingCode() ? '发送中...' : '发送短信'}
+                        </button>
+                      </div> */}
+                      <div class='form-body-button'>
+                        <button class="send-code-button" type="button" disabled={isSubmitting()} onClick={handleDebouncedSubmit}>
+                          {isSubmitting() ? '添加中...' : '添加账号'}
                         </button>
                       </div>
                     </Show>
