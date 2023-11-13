@@ -1,8 +1,7 @@
-.registration-warp {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
+// .registration-warp {
+//   display: flex;
+//   justify-content: flex-end;
+// }
 .registration-success {
   background: #fff;
   box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
@@ -46,13 +45,14 @@
     }
   }
 }
+
 .invitation-code {
   // position: absolute;
   // top: 20%;
   // right: 10%;
   margin-left: 150px;
   width: 300px;
-  background-color: #fff;
+  background: rgba(255, 255, 255, 0.8);
   box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   text-align: center;
@@ -65,7 +65,7 @@
       // text-decoration: none;
       line-height: 20px;
       margin-bottom: 10px;
-      color: #007bff;
+      color: #3f89ec;
       img {
         width: 15px;
         margin-left: 5px;
@@ -80,7 +80,7 @@
     align-items: center;
     padding-top: 20px;
     button {
-      background-color: #007bff;
+      background-color: #BDCEFC;
       color: #fff;
       border: none;
       padding: 14px 20px;
@@ -90,6 +90,9 @@
       width: 160px;
       transition: background-color 0.2s ease-in-out;
       margin-bottom: 20px;
+      &:hover {
+        background-color: #3f89ec;
+      }
     }
   }
 }
@@ -108,14 +111,53 @@
     margin-bottom: 20px;
   }
   .invitation-button-handle {
-    background-color: #007bff;
+    background-color: #3f89ec;
     color: #fff;
     border: none;
     margin-right: 20px;
   }
   .invitation-button-cancle {
     background-color: #fff;
-    color: #007bff;
-    border: 1px solid #007bff;
+    color: #3f89ec;
+    border: 1px solid #3f89ec;
+  }
+}
+.registration-form-invitation {
+  .invitation-code-link {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    a {
+      display: inline-block;
+      font-size: 15px;
+      line-height: 20px;
+      margin-bottom: 10px;
+      color: #3f89ec;
+      img {
+        width: 15px;
+        margin-left: 5px;
+      }
+    }
+  }
+  .form-code-invitation {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .code-invitation-button {
+      background-color: #BDCEFC;
+      color: #fff;
+      border: none;
+      width: 200px;
+      height: 48px;
+      line-height: 48px;
+      text-align: center;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      &.active {
+        background-color: #3f89ec;
+      }
+    }
   }
 }
