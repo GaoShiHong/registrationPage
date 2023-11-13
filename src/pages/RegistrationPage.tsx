@@ -1350,7 +1350,7 @@ export function RegistrationPage() {
           <Model title={"提示"}>
             <div class='first-model-children'>
               <div class='model-children-message'>
-                如果您有志同道合的朋友，想邀请来一起玩 右方的邀请功能福利介绍，一定要看看！能让您白嫖和成为大佬
+                羁绊系统，老人带新，成为师徒，绑定之后，师傅和徒弟都可获得奖励，师傅可以额外得到消费返点，更有最终奖励等你去开启。（一个人的江湖未免有些许落寞，快喊上你的兄弟来征战这片疆土）
               </div>
               <button class="model-children-button" type="button" onClick={() => setFirstModel(false)}>
                 关闭
